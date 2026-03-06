@@ -1,0 +1,11 @@
+.DS_store
+**/*.iso
+**/*.img
+**/*.raw
+**/*.qcow2
+**/*.key
+**/*.tfstate*
+**/rke2.yaml
+**/k3s.yaml
+**/*.env
+**/.terraform/

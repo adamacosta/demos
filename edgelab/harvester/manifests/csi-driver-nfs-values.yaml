@@ -1,0 +1,30 @@
+image:
+  nfs:
+    repository: registry.localdomain:5000/sig-storage/nfsplugin
+  csiProvisioner:
+    repository: registry.localdomain:5000/sig-storage/csi-provisioner
+  csiResizer:
+    repository: registry.localdomain:5000/sig-storage/csi-resizer
+  csiSnapshotter:
+    repository: registry.localdomain:5000/sig-storage/csi-snapshotter
+  livenessProbe:
+    repository: registry.localdomain:5000/sig-storage/livenessprobe
+  nodeDriverRegistrar:
+    repository: registry.localdomain:5000/sig-storage/csi-node-driver-registrar
+  externalSnapshotter:
+    repository: registry.localdomain:5000/sig-storage/snapshot-controller
+
+imagePullSecrets:
+  - name: homelab-registry
+
+storageClass:
+  create: true
+  name: nfs-csi
+  parameters:
+    server: 192.168.3.6
+    share: /mnt/shared/data
+    subDir: hvst-vols
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  mountOptions:
+    - nfsvers=4.1

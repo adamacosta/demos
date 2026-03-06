@@ -1,0 +1,42 @@
+---
+apiVersion: network.harvesterhci.io/v1beta1
+kind: ClusterNetwork
+metadata:
+  creationTimestamp: null
+  name: vmnet
+---
+apiVersion: network.harvesterhci.io/v1beta1
+kind: VlanConfig
+metadata:
+  creationTimestamp: null
+  name: vmnet
+spec:
+  clusterNetwork: vmnet
+  uplink:
+    bondOptions:
+      miimon: -1
+      mode: active-backup
+    linkAttributes:
+      txQLen: -1
+    nics:
+      - eno1
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  creationTimestamp: null
+  name: vlan10
+  namespace: demo
+spec:
+  config: >-
+    {"cniVersion":"0.3.1","name":"vlan10","type":"bridge","bridge":"vmnet-br","promiscMode":true,"vlan":10,"ipam":{}}
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  creationTimestamp: null
+  name: vlan20
+  namespace: demo
+spec:
+  config: >-
+    {"cniVersion":"0.3.1","name":"vlan20","type":"bridge","bridge":"vmnet-br","promiscMode":true,"vlan":20,"ipam":{}}
