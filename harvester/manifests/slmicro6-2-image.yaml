@@ -1,0 +1,12 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  creationTimestamp: null
+  name: sl-micro-6-2
+  namespace: harvester-public
+spec:
+  backend: backingimage
+  displayName: SL-Micro.x86_64-6.2-Base-qcow-GM.qcow2
+  sourceType: download
+  targetStorageClassName: sl-micro-6-2-image
+  url: http://192.168.3.138:8080/SL-Micro.x86_64-6.2-Base-qcow-GM.qcow2

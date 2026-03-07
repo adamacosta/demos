@@ -1,0 +1,56 @@
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  namespace: kube-system
+  name: endpoint-copier-operator
+spec:
+  bootstrap: true
+  targetNamespace: endpoint-copier-operator
+  createNamespace: true
+  chartContent: |-
+    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
+    AgAA//9Fra9jAEQAAA==

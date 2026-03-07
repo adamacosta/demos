@@ -1,0 +1,31 @@
+cni: cilium
+disable:
+  - rke2-ingress-nginx
+disable-kube-proxy: true
+embedded-registry: true
+kube-apiserver-arg:
+  - tls-min-version=VersionTLS13
+  - audit-log-path=/var/lib/rancher/rke2/server/logs/audit.log
+  - anonymous-auth=false
+  - authorization-mode=RBAC,Node
+  - audit-log-maxage=30
+  - audit-log-mode=blocking-strict
+kubelet-arg:
+  - anonymous-auth=false
+  - read-only-port=0
+  - authorization-mode=Webhook
+  - streaming-connection-idle-timeout=5m
+  - protect-kernel-defaults=true
+kube-controller-manager-arg:
+  - bind-address=127.0.0.1
+  - tls-min-version=VersionTLS13
+  - use-service-account-credentials=true
+kube-scheduler-arg:
+  - tls-min-version=VersionTLS13
+pod-security-admission-config-file: /etc/rancher/rke2/rancher-pss.yaml
+profile: cis
+secrets-encryption: true
+tls-san:
+  - 192.168.3.2
+  - rancher-api.localdomain
+write-kubeconfig-mode: "0640"

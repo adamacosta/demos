@@ -1,0 +1,28 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rancher
+  namespace: cattle-system
+spec:
+  secretName: tls-rancher-ingress
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS1
+    size: 4096
+  duration: 2160h # 90d
+  renewBefore: 360h # 15d
+  usages:
+    - server auth
+    - client auth
+  subject:
+    organizations:
+      - Acosta Home
+  dnsNames:
+    - rancher.localdomain
+    - www.rancher.localdomain
+  ipAddresses:
+    - 192.168.3.3
+  issuerRef:
+    name: ca-issuer
+    kind: ClusterIssuer

@@ -1,0 +1,32 @@
+---
+apiVersion: network.harvesterhci.io/v1beta1
+kind: ClusterNetwork
+metadata:
+  creationTimestamp: null
+  name: vmnet
+---
+apiVersion: network.harvesterhci.io/v1beta1
+kind: VlanConfig
+metadata:
+  creationTimestamp: null
+  name: vmnet
+spec:
+  clusterNetwork: vmnet
+  uplink:
+    bondOptions:
+      miimon: -1
+      mode: active-backup
+    linkAttributes:
+      txQLen: -1
+    nics:
+      - enp4s0
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  creationTimestamp: null
+  name: vmnet1
+  namespace: harvester-public
+spec:
+  config: >-
+    {"cniVersion":"0.3.1","name":"vmnet1","type":"bridge","bridge":"vmnet-br","promiscMode":true,"ipam":{}}

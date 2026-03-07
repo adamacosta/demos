@@ -1,0 +1,17 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  namespace: kube-system
+  name: rancher
+spec:
+  targetNamespace: cattle-system
+  createNamespace: true
+  repo: https://releases.rancher.com/server-charts/stable
+  chart: rancher
+  version: 2.12.3
+  valuesContent: |-
+    hostname: rancher.rgsdemo.com
+    privateCA: true
+    ingress:
+      tls:
+        source: letsEncrypt

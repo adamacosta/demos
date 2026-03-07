@@ -1,0 +1,20 @@
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+write_files:
+  - content: |
+      kubelet-arg:
+        - anonymous-auth=false
+        - read-only-port=0
+        - authorization-mode=Webhook
+        - streaming-connection-idle-timeout=5m
+        - protect-kernel-defaults=true
+      node-label:
+        - "role=agent"
+        - "os=rhel"
+      profile: cis
+      selinux: true
+      server: https://${server_ip}:9345
+    path: /etc/rancher/rke2/config.yaml

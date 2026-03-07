@@ -1,9 +1,0 @@
-#cloud-config
-package_update: false
-run_cmd:
-  - - systemctl
-    - enable
-    - --now
-    - qemu-guest-agent
-ssh_authorized_keys:
-  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G

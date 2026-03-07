@@ -1,0 +1,25 @@
+---
+apiVersion: migration.harvesterhci.io/v1beta1
+kind: OvaSource
+metadata:
+  name: ubuntu-noble
+  namespace: demo
+spec:
+  url: "http://10.240.0.2:8080/noble-server-cloudimg-amd64.ova"
+  httpTimeoutSeconds: 300
+---
+apiVersion: migration.harvesterhci.io/v1beta1
+kind: VirtualMachineImport
+metadata:
+  name: ubuntu-noble
+  namespace: demo
+spec: 
+  virtualMachineName: ubuntu-noble
+  networkMapping:
+  - sourceNetwork: "VM Network"
+    destinationNetwork: "demo/vlan10"
+  sourceCluster:
+    name: ubuntu-noble
+    namespace: demo
+    kind: OvaSource
+    apiVersion: migration.harvesterhci.io/v1beta1

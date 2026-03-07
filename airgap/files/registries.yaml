@@ -1,0 +1,10 @@
+mirrors:
+  docker.io:
+    endpoint:
+      - "https://registry.localdomain:5000"
+  registry.rancher.com:
+    endpoint:
+      - "https://registry.localdomain:5000"
+  registry.suse.com:
+    endpoint:
+      - "https://registry.localdomain:5000"

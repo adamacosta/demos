@@ -1,0 +1,13 @@
+---
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  creationTimestamp: null
+  name: opensuse-leap-15-6
+  namespace: demo
+spec:
+  backend: backingimage
+  displayName: opensuse-leap-15.6.x86_64-nocloud.qcow2
+  sourceType: download
+  targetStorageClassName: opensuse-leap-15-6-image
+  url: http://10.240.0.2:8080/openSUSE-Leap-15.6.x86_64-NoCloud.qcow2

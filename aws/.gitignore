@@ -1,0 +1,9 @@
+**/*.tfstate*
+**/.terraform/
+**/rke2.yaml
+**/k3s.yaml
+**/*.key
+**/*.pem
+**/*.tfvars
+**/*store/
+examples/test
