@@ -19,10 +19,9 @@ spec:
     organizations:
       - Acosta Home
   dnsNames:
-    - rancher.localdomain
-    - www.rancher.localdomain
+    - rancher.homelab.localdomain
   ipAddresses:
-    - 192.168.3.3
+    - 192.168.3.30
   issuerRef:
     name: ca-issuer
     kind: ClusterIssuer
