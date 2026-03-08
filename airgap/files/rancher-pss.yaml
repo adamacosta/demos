@@ -52,7 +52,6 @@ plugins:
                      kube-public,
                      kube-system,
                      longhorn-system,
-                     metallb-system,
                      rancher-alerting-drivers,
                      security-scan,
                      tigera-operator]

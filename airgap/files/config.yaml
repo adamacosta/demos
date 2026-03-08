@@ -1,8 +1,9 @@
 cni: cilium
-disable:
-  - rke2-ingress-nginx
+cloud-provider-config: /var/lib/rancher/rke2/etc/config-files/cloud-provider-config
+cloud-provider-name: harvester
 disable-kube-proxy: true
 embedded-registry: true
+ingress-controller: traefik
 kube-apiserver-arg:
   - tls-min-version=VersionTLS13
   - audit-log-path=/var/lib/rancher/rke2/server/logs/audit.log
@@ -25,7 +26,9 @@ kube-scheduler-arg:
 pod-security-admission-config-file: /etc/rancher/rke2/rancher-pss.yaml
 profile: cis
 secrets-encryption: true
+selinux: true
+system-default-registry: rgcrprod.azurecr.us
 tls-san:
-  - 192.168.3.2
-  - rancher-api.localdomain
+  - 192.168.3.30
+  - rancher-api.homelab.localdomain
 write-kubeconfig-mode: "0640"

@@ -1,57 +1,9 @@
 #cloud-config
-packages:
-  - bash-completion
-  - qemu-guest-agent
 package_update: false
 runcmd:
   - - systemctl
     - enable
     - '--now'
     - qemu-guest-agent
-  - - systemctl
-    - restart
-    - systemd-modules-load
-  - - systemctl
-    - restart
-    - systemd-sysctl
-users:
-  - name: rancher
-    gecos: "cloud-init default user"
-    primary_group: rancher
-    groups: wheel,systemd-journal
-    lock_passwd: false
-    passwd: $6$MoLb08YLnZZJ6Mfr$Z6YM6GeWAyUo/wtDZVmfw/PNmZFBivZeB6OdYiFqIh1NC09FFKnPioRw8hJ1qxmD2qQVXOs1abRE4St2X5QFr.
-    ssh_authorized_keys:
-      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G
-    sudo: [ "ALL=(ALL) NOPASSWD:ALL" ]
-  - name: etcd
-    gecos: "etcd user"
-    shell: /sbin/nologin
-    system: true
-write_files:
-  - content: |
-      system-default-registry: registry.localdomain:5000
-    path: /etc/rancher/rke2/config.yaml.d/60-rancher.yaml
-  - content: |
-      br_netfilter
-      ip_vs
-      ip_vs_rr
-      overlay
-    path: /etc/modules-load.d/rke2.conf
-  - content: |
-      [keyfile]
-      unmanaged-devices=interface-name:cilium*;interface-name:lxc*
-    path: /etc/NetworkManager/conf.d/rke2-cilium.conf
-  - content: |
-      vm.panic_on_oom      = 0
-      vm.overcommit_memory = 1
-      kernel.panic         = 10
-      kernel.panic_on_oops = 1
-    path: /etc/sysctl.d/60-rke2-cis.conf
-  - content: |
-      fs.inotify.max_user_instances       = 12288
-      fs.inotify.max_user_watches         = 524288
-      net.ipv4.ip_forward                 = 1
-      net.bridge.bridge-nf-call-iptables  = 1
-      net.bridge.bridge-nf-call-ip6tables = 1
-    path: /etc/sysctl.d/50-rke2.conf
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGUV5mYJt2mNSayglG9+ez4W66Cj5PdBfvg5+Mqf+e9G

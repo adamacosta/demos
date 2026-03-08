@@ -1,10 +1,10 @@
 mirrors:
   docker.io:
     endpoint:
-      - "https://registry.localdomain:5000"
+      - "https://rgcrprod.azurecr.us"
   registry.rancher.com:
     endpoint:
-      - "https://registry.localdomain:5000"
+      - "https://rgcrprod.azurecr.us"
   registry.suse.com:
     endpoint:
-      - "https://registry.localdomain:5000"
+      - "https://rgcrprod.azurecr.us"

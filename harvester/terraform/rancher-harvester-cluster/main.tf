@@ -109,6 +109,19 @@ resource "rancher2_cluster_v2" "demo" {
   kubernetes_version                                         = local.kubernetes_version
 
   rke_config {
+    additional_manifest = <<-EOF
+    apiVersion: helm.cattle.io/v1
+    kind: HelmChartConfig
+    metadata:
+      name: rke2-traefik
+      namespace: kube-system
+    spec:
+      valuesContent: |-
+        service:
+          type: LoadBalancer
+          annotations:
+            cloudprovider.harvesterhci.io/ipam: pool
+    EOF
     chart_values = yamlencode({
       harvester-cloud-provider = {
         cloudConfigPath = "/var/lib/rancher/rke2/etc/config-files/cloud-provider-config"
@@ -127,6 +140,7 @@ resource "rancher2_cluster_v2" "demo" {
     machine_global_config = yamlencode({
       cni                 = local.cni
       etcd-expose-metrics = false
+      ingress-controller  = "traefik"
       kube-apiserver-arg = [
         "admission-control-config-file=/etc/rancher/rke2/config/rancher-psact.yaml"
       ]

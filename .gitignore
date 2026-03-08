@@ -9,3 +9,6 @@
 **/k3s.yaml
 **/*.env
 **/.terraform/
+**/*kubeconfig*
+**/*.rpm
+**/*.tar.zst

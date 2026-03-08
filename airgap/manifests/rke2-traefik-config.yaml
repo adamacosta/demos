@@ -1,0 +1,12 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: rke2-traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    service:
+      type: LoadBalancer
+      annotations:
+        cloudprovider.harvesterhci.io/ipam: pool
+        loadbalancer.harvesterhci.io/network: harvester-public/vmnet1

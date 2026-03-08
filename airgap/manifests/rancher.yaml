@@ -343,8 +343,10 @@ spec:
     TeIv7X7dPXfP3XP3fLHn/wYAAP//I9D65gCiAQA=
   failurePolicy: reinstall
   targetNamespace: cattle-system
+  createNamespace: true
   valuesContent: |-
-    hostname: rancher.localdomain
-    privateCA: true
+    hostname: rancher.homelab.localdomain
     ingress:
-      enabled: false
+      tls:
+        source: rancher
+    systemDefaultRegistry: rgcrprod.azurecr.us

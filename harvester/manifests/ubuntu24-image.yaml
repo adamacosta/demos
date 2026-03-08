@@ -1,0 +1,12 @@
+apiVersion: harvesterhci.io/v1beta1
+kind: VirtualMachineImage
+metadata:
+  creationTimestamp: null
+  name: ubuntu-24
+  namespace: harvester-public
+spec:
+  backend: backingimage
+  displayName: noble-server-cloudimg-amd64.img
+  sourceType: download
+  targetStorageClassName: ubuntu-24-image
+  url: http://192.168.3.138:8080/noble-server-cloudimg-amd64.img
