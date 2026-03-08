@@ -180,8 +180,9 @@ It includes the config files for `rke2` that are also found in the `files/` subd
 - `/etc/rancher/rke2/rancher-pss.yaml`
 - `/etc/rancher/rke2/registries.yaml`
 - `/var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml`
+- `/var/lib/rancher/rke2/server/manifests/rke2-traefik-config.yaml`
 
-Other than the config values for `rke2-cilium`, these are not strictly needed, but provide `rke2` in the most fully-hardened state. Each of these can be adjusted to account for local policy.
+Other than the config values for `cilium` and `traefik`, these are not strictly needed, but provide `rke2` in the most fully-hardened state. Each of these can be adjusted to account for local policy.
 
 To generate these:
 

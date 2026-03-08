@@ -9,4 +9,3 @@ spec:
       type: LoadBalancer
       annotations:
         cloudprovider.harvesterhci.io/ipam: pool
-        loadbalancer.harvesterhci.io/network: harvester-public/vmnet1

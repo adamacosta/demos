@@ -13,6 +13,7 @@ RANCHER_PSS_B64=$(base64 -w 0 < "$CONFIG_DIR/rancher-pss.yaml")
 REGISTRIES_B64=$(base64 -w 0 < "$CONFIG_DIR/registries.yaml")
 CLOUD_PROVIDER_CONFIG_B64=$(base64 -w 0 < "$MANIFEST_DIR/harvester-cloud-provider-config.yaml")
 CILIUM_CONFIG_B64=$(base64 -w 0 < "$MANIFEST_DIR/rke2-cilium-config.yaml")
+TRAEFIK_CONFIG_B64=$(base64 -w 0 < "$MANIFEST_DIR/rke2-traefik-config.yaml")
 cat <<EOF
 write_files:
   - encoding: b64
@@ -33,4 +34,7 @@ write_files:
   - encoding: b64
     content: $CILIUM_CONFIG_B64
     path: /var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml
+  - encoding: b64
+    content: $TRAEFIK_CONFIG_B64
+    path: /var/lib/rancher/rke2/server/manifests/rke2-traefik-config.yaml
 EOF
