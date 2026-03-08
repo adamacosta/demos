@@ -13,8 +13,6 @@ sudo iptables -t filter -A OUTPUT -d 169.254.0.0/16 -j ACCEPT
 sudo iptables -t filter -A OUTPUT -j DROP
 ```
 
-Assuming your LAN subnet is `192.168.0.0/16`. Else, substitute in the real subnet so your hosts can still access local resources we will use to stage required files.
-
 ## RKE2
 
 Find the latest stable version:
