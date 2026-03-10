@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   name: suse-vlan20-disk-0
-  namespace: demo
+  namespace: edgelab-demo
 spec:
   accessModes:
   - ReadWriteMany
@@ -19,7 +19,7 @@ kind: Secret
 metadata:
   creationTimestamp: null
   name: suse-vlan20-cloudinit
-  namespace: demo
+  namespace: edgelab-demo
 data:
   networkdata: ""
   userdata: I2Nsb3VkLWNvbmZpZwpwYWNrYWdlX3VwZGF0ZTogZmFsc2UKcnVuX2NtZDoKICAtIC0gc3lzdGVtY3RsCiAgICAtIGVuYWJsZQogICAgLSAtLW5vdwogICAgLSBxZW11LWd1ZXN0LWFnZW50CnNzaF9hdXRob3JpemVkX2tleXM6CiAgLSBzc2gtcnNhCiAgICBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFDQVFEWUw3ZngzTmNKVlhoT1pxUGRsaitKRUtLYTVTQ1R5K0VLZFNGaUNyRWREUjQ3U2NFMGtST0ZXaHk5bjVrZTJNSlUyYnlFcjEyeGVpSmk2emw0dEtVaFVrTlJENlVZMFFXdDJab0I5ZGdjQ3p5azh6OGhCY1p6Rml0cFIxTnQ3Wm5iRUlNTXZRTFM4RUgrcXFIMFhnSGc3VlV0b0oxMlo0TFRYSUZFd3g0eExuMDFiek51WnlkZnY2S2dsbHFzbG42R0VzS1pidnd0VjBPVTR6RXhFdDRUQjVLc1JXdlR3ZUxScDVtWFpYbUJHYTFndDJmR0xQRXRRb0xxVU5hMUp0cmhMa3BBelhFa05mek1VYU1QMUVIN1luMGVyVkU4YU1RL1NqVk53bjdES1d0SmJSZXhQSmlTOU9UWnJaMjJpU1FDWEJYVnlCeURhdFFOdzhZMXJUWC8vZlUwdksxcDhoakNyNHFEZmMxNUI3V2xqbjFoSHVtdWd6cnBOS0JseWI4b21hcUVPZ0NDS0tJZGpXYzhhMXV3M1R6U2hlWUw2cng1Z1BkM3E1SktRQVRaQnNvdjZGa3NBeXd6azhpc1FZWStjMlhwVmt5WXFiOEx4SGZYWWRmblJ5VXVNd0hrZ2tOSnZyL3BUc3hyVUkwbGQrNnhGTWdUaWR6a0xmSXR2NVFvdExUeXgvT3FqcDFDU0t2d1IzQldHb0NRNC9GWDhkNTBzQXdwVUhQSnVkREMxSVpaMVNBWElJSlBGQjFxUldadlRSTkg3bUR0NkkwMUl1SDhkRkpzalNaN0lHWVZBbVVOYnV2VGNML0pNRXpWblpCcDdNbjlOUmh1NkJtN2MwdVR4OGhNbEdyUkx4a2JaT2xqS2NLNnh0d3pHYkRkcmhCbXg3U3ROa1pKbnc9PQo=
@@ -29,7 +29,7 @@ kind: VirtualMachine
 metadata:
   creationTimestamp: null
   name: suse-vlan20
-  namespace: demo
+  namespace: edgelab-demo
 spec:
   runStrategy: RerunOnFailure
   template:
@@ -73,7 +73,7 @@ spec:
       hostname: suse-vlan20
       networks:
       - multus:
-          networkName: demo/vlan20
+          networkName: harvester-public/vmnet-vlan20
         name: default
       volumes:
       - name: disk-0

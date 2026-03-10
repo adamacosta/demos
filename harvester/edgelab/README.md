@@ -1,11 +1,12 @@
 # Demonstrate
 
-- VLAN network architecture
-- Airgap install
-- STIG hardening
-- Harvester actions
+- [VLAN network architecture](./docs/arch.md)
+- [Airgap install](./docs/install.md)
+- [STIG hardening](./docs/stig.md)
+- [Gateway/bastion setup](./docs/gateway.md)
+- [Harvester](./docs/harvester.md)
   - Download kubeconfig
   - Setup network(s)
   - Create VM(s)
   - Import VM from OVA
-  - Use third-party storage provisioner
+- [Third-party storage](./docs/csi.md)

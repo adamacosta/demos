@@ -1,10 +1,9 @@
----
 apiVersion: harvesterhci.io/v1beta1
 kind: VirtualMachineImage
 metadata:
   creationTimestamp: null
   name: opensuse-leap-15-6
-  namespace: demo
+  namespace: harvester-public
 spec:
   backend: backingimage
   displayName: opensuse-leap-15.6.x86_64-nocloud.qcow2

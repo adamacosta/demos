@@ -74,3 +74,17 @@ Writing superblocks and filesystem accounting information: done
 # cat /mnt/hello.txt
 hello
 ```
+
+## Cleanup
+
+```sh
+kubectl delete virtualmachines -n edgelab-demo --all
+kubectl delete pvc -n edgelab-demo --all
+kubectl delete secret -n edgelab-demo --all
+kubectl delete virtualmachineimage -n edgelab-demo --all
+kubectl delete pvc -n edgelab-demo --all
+kubectl delete ns edgelab-demo
+kubectl delete network-attachment-definitions -n harvester-public --all
+kubectl delete vlanconfig vmnet
+kubectl delete clusternetwork vmnet
+```

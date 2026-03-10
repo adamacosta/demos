@@ -4,7 +4,7 @@ kind: PersistentVolumeClaim
 metadata:
   creationTimestamp: null
   name: nfs-vol
-  namespace: demo
+  namespace: edgelab-demo
 spec:
   accessModes:
   - ReadWriteMany

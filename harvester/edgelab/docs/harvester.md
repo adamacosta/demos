@@ -39,13 +39,29 @@ contexts:
 current-context: "local"
 ```
 
+Configuring `kubectl` to use these credentials:
+
+```sh
+export KUBECONFIG="$HOME/harvester-edgelab.yaml"
+```
+
+Verify it looks the way you expect:
+
+```console
+$ kubectl get node -owide
+NAME     STATUS   ROLES                AGE   VERSION          INTERNAL-IP   EXTERNAL-IP   OS-IMAGE           KERNEL-VERSION     CONTAINER-RUNTIME
+hvst-0   Ready    control-plane,etcd   21d   v1.34.3+rke2r3   10.240.0.10   <none>        Harvester v1.7.1   6.4.0-36-default   containerd://2.1.5-k3s1
+hvst-1   Ready    control-plane,etcd   21d   v1.34.3+rke2r3   10.240.0.11   <none>        Harvester v1.7.1   6.4.0-36-default   containerd://2.1.5-k3s1
+hvst-2   Ready    control-plane,etcd   21d   v1.34.3+rke2r3   10.240.0.12   <none>        Harvester v1.7.1   6.4.0-36-default   containerd://2.1.5-k3s1
+```
+
 ### Create namespace for demo
 
-### Using the UI
+#### Using the UI
 
 ![namespace](./static/namespace.png)
 
-### Kubernetes API
+#### Kubernetes API
 
 ```sh
 kubectl create -f manifests/namespace.yaml
@@ -88,7 +104,7 @@ kubectl create -f manifests/network.yaml
 ```sh
 kubectl create -f manifests/opensuse-leap-image.yaml
 kubectl wait --for=condition=Imported \
-  --namespace demo \
+  --namespace harvester-public \
   --timeout=300s \
   virtualmachineimages/opensuse-leap-15-6
 ```
@@ -103,17 +119,4 @@ kubectl create -f manifests/suse-vlan20.yaml
 ```sh
 kubectl create -f manifests/ubuntu-import.yaml
 kubectl logs -n harvester-system -l app.kubernetes.io/name=harvester-vm-import-controller -f
-```
-
-## Cleanup
-
-```sh
-kubectl delete virtualmachines -n demo --all
-kubectl delete pvc -n demo --all
-kubectl delete secret -n demo --all
-kubectl delete virtualmachineimage -n demo --all
-kubectl delete network-attachment-definitions -n demo --all
-kubectl delete ns demo
-kubectl delete vlanconfig vmnet
-kubectl delete clusternetwork vmnet
 ```
