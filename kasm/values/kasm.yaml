@@ -1,0 +1,16 @@
+publicAddr: kasm.localdomain
+
+proxyService:
+  type: ClusterIP
+
+ingress:
+  enabled: true
+  tls: true
+
+certificate:
+  secretName: tls-kasm-ingress
+  certManager:
+    enabled: true
+    addWildCard: true
+    issuerName: ca-issuer
+    issuerKind: ClusterIssuer

@@ -9,8 +9,9 @@ pushd "${WORKDIR}"
 
 curl -fsLSO "https://github.com/rancher/rke2/releases/download/${RKE2_VERSION}/rke2-images-core.linux-amd64.txt"
 curl -fsLSO "https://github.com/rancher/rke2/releases/download/${RKE2_VERSION}/rke2-images-cilium.linux-amd64.txt"
+curl -fsLSO "https://github.com/rancher/rke2/releases/download/${RKE2_VERSION}/rke2-images-harvester.linux-amd64.txt"
 
-cat rke2-images-*.txt | sed -E '/aws|azure|nginx/d' | sed 's/docker\.io/rgcrprod\.azurecr\.us/g' \
+cat rke2-images-*.txt | sed -E '/aws|azure|nginx/d' | sed 's/docker\.io/registry\.ranchercarbide\.dev/g' \
   > rke2-images.txt
 
 popd

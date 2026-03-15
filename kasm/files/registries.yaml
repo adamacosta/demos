@@ -1,0 +1,9 @@
+mirrors:
+  "*":
+    endpoint:
+      - "https://registry.localdomain:5000"
+configs:
+  "registry.localdomain:5000":
+    auth:
+      username: rancher
+      password: Rancher!234

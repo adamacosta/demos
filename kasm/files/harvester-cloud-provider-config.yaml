@@ -7,4 +7,4 @@ spec:
   valuesContent: |-
     global:
       cattle:
-        clusterName: rancher
+        clusterName: kasm

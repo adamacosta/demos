@@ -5,9 +5,14 @@ set -o pipefail
 # Add user to k8s using service account, no RBAC (must create RBAC after this script)
 if [[ -z "$1" ]] || [[ -z "$2" ]]; then
   echo "description: The script is used to add a serviceAccount in the Harvester cluster for the Harvester cloud provider and generate the RKE addon configuration. It depends on kubectl."
-  echo "usage: $0 <service_account_name> <namespace>"
+  echo "usage: $0 <service_account_name> <namespace> [config_dir]"
   exit 1
 fi
+
+PARENT=`dirname "$0"`
+CONFIG_DIR="$PARENT/../files"
+
+[ -z "$3" ] || CONFIG_DIR="$3"
 
 SERVICE_ACCOUNT_NAME=$1
 ROLE_BINDING_NAME=$1
@@ -129,15 +134,43 @@ get_secret_name_from_service_account
 extract_ca_crt_from_secret
 get_user_token_from_secret
 set_kube_config_values
-echo "########## cloud config ############"
-cat ${KUBECFG_FILE_NAME}
-echo
-echo "########## cloud-init user data ############"
+
 KUBECONFIG_B64=$(base64 -w 0 < "${KUBECFG_FILE_NAME}")
+AUDIT_POLICY_B64=$(base64 -w 0 < "$CONFIG_DIR/audit-policy.yaml")
+RKE2_CONFIG_B64=$(base64 -w 0 < "$CONFIG_DIR/config.yaml")
+RANCHER_PSS_B64=$(base64 -w 0 < "$CONFIG_DIR/rancher-pss.yaml")
+REGISTRIES_B64=$(base64 -w 0 < "$CONFIG_DIR/registries.yaml")
+CLOUD_PROVIDER_CONFIG_B64=$(base64 -w 0 < "$CONFIG_DIR/harvester-cloud-provider-config.yaml")
+CILIUM_CONFIG_B64=$(base64 -w 0 < "$CONFIG_DIR/rke2-cilium-config.yaml")
+TRAEFIK_CONFIG_B64=$(base64 -w 0 < "$CONFIG_DIR/rke2-traefik-config.yaml")
+
+echo "########## cloud-init user data ############"
 cat <<EOF
 write_files:
   - encoding: b64
     content: ${KUBECONFIG_B64}
     path: /var/lib/rancher/rke2/etc/config-files/cloud-provider-config
+  - encoding: b64
+    content: $AUDIT_POLICY_B64
+    path: /etc/rancher/rke2/audit-policy.yaml
+  - encoding: b64
+    content: $RKE2_CONFIG_B64
+    path: /etc/rancher/rke2/config.yaml
+  - encoding: b64
+    content: $RANCHER_PSS_B64
+    path: /etc/rancher/rke2/rancher-pss.yaml
+  - encoding: b64
+    content: $REGISTRIES_B64
+    path: /etc/rancher/rke2/registries.yaml
+  - encoding: b64
+    content: $CLOUD_PROVIDER_CONFIG_B64
+    path: /var/lib/rancher/rke2/server/manifests/harvester-cloud-provider-config.yaml
+  - encoding: b64
+    content: $CILIUM_CONFIG_B64
+    path: /var/lib/rancher/rke2/server/manifests/rke2-cilium-config.yaml
+  - encoding: b64
+    content: $TRAEFIK_CONFIG_B64
+    path: /var/lib/rancher/rke2/server/manifests/rke2-traefik-config.yaml
 EOF
+
 rm -r ${TARGET_FOLDER}
