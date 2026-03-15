@@ -1,0 +1,11 @@
+# binary
+**/*store/
+**/*.tgz
+**/*.tar.zst
+
+# secrets
+**/*.key
+**/*.env
+
+# generated files
+*-manifest.yaml

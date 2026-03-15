@@ -1,0 +1,10 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: harvester-cloud-provider
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    global:
+      cattle:
+        clusterName: rancher

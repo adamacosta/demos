@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    cloudprovider.harvesterhci.io/ipam: pool
+    cloudprovider.harvesterhci.io/primary-service: kube-system/rke2-traefik
+  creationTimestamp: null
+  labels:
+    component: apiserver
+    provider: kubernetes
+  name: apiserver
+  namespace: default
+spec:
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: https
+    port: 6443
+    protocol: TCP
+    targetPort: 6443
+  sessionAffinity: None
+  type: LoadBalancer
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  creationTimestamp: null
+  labels:
+    endpointslice.kubernetes.io/managed-by: manual
+    kubernetes.io/service-name: apiserver
+  name: apiserver
+  namespace: default
+addressType: IPv4
+endpoints:
+- addresses:
+  - 192.168.3.31
+- addresses:
+  - 192.168.3.32
+- addresses:
+  - 192.168.3.33
+ports:
+- name: https
+  port: 6443
+  protocol: TCP

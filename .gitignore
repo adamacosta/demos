@@ -7,8 +7,15 @@
 **/*.tfstate*
 **/rke2.yaml
 **/k3s.yaml
+**/local.yaml
+**/ca-key-pair-secret.yaml
+**/ca-key-pair.yaml
 **/*.env
 **/.terraform/
 **/*kubeconfig*
 **/*.rpm
 **/*.tar.zst
+**/*.tar.gz
+**/*.tgz
+**/*-manifest.yaml
+**/*store/

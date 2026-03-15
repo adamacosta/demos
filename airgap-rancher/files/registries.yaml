@@ -1,0 +1,10 @@
+mirrors:
+  docker.io:
+    endpoint:
+      - "https://rgcrprod.azurecr.us"
+  registry.rancher.com:
+    endpoint:
+      - "https://rgcrprod.azurecr.us"
+  registry.suse.com:
+    endpoint:
+      - "https://rgcrprod.azurecr.us"
