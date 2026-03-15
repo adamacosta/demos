@@ -1,0 +1,104 @@
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+users:
+  - default
+  - name: etcd
+    system: true
+    shell: /sbin/nologin
+    no_create_home: true
+write_files:
+  - content: |
+      [keyfile]
+      unmanaged-devices=interface-name:flannel*;interface-name:cali*;interface-name:tunl*;interface-name:vxlan.calico;interface-name:vxlan-v6.calico;interface-name:wireguard.cali;interface-name:wg-v6.cali
+    path: /etc/NetworkManager/conf.d/rke2-canal.conf
+  - content: |
+      disable:
+        - rke2-ingress-nginx
+      kube-controller-manager-arg:
+        - bind-address=127.0.0.1
+        - tls-min-version=VersionTLS13
+        - use-service-account-credentials=true
+      kube-scheduler-arg:
+        - tls-min-version=VersionTLS13
+      kube-apiserver-arg:
+        - tls-min-version=VersionTLS13
+        - anonymous-auth=false
+        - authorization-mode=RBAC,Node
+        - audit-log-maxage=30
+        - audit-log-mode=blocking-strict
+      kubelet-arg:
+        - anonymous-auth=false
+        - read-only-port=0
+        - authorization-mode=Webhook
+        - streaming-connection-idle-timeout=5m
+        - protect-kernel-defaults=true
+      node-label:
+        - "name=server"
+        - "os=rhel"
+      pod-security-admission-config-file: /etc/rancher/rke2/rancher-pss.yaml
+      profile: cis
+      secrets-encryption: true
+      selinux: true
+      write-kubeconfig-mode: "0600"
+    path: /etc/rancher/rke2/config.yaml
+  - content: |
+      apiVersion: apiserver.config.k8s.io/v1
+      kind: AdmissionConfiguration
+      plugins:
+        - name: PodSecurity
+          configuration:
+            apiVersion: pod-security.admission.config.k8s.io/v1
+            kind: PodSecurityConfiguration
+            defaults:
+              enforce: "restricted"
+              enforce-version: "latest"
+              audit: "restricted"
+              audit-version: "latest"
+              warn: "restricted"
+              warn-version: "latest"
+            exemptions:
+              usernames: []
+              runtimeClasses: []
+              namespaces: [calico-apiserver,
+                          calico-system,
+                          cattle-alerting,
+                          cattle-csp-adapter-system,
+                          cattle-elemental-system,
+                          cattle-epinio-system,
+                          cattle-externalip-system,
+                          cattle-fleet-local-system,
+                          cattle-fleet-system,
+                          cattle-gatekeeper-system,
+                          cattle-global-data,
+                          cattle-global-nt,
+                          cattle-impersonation-system,
+                          cattle-istio,
+                          cattle-istio-system,
+                          cattle-logging,
+                          cattle-logging-system,
+                          cattle-monitoring-system,
+                          cattle-neuvector-system,
+                          cattle-prometheus,
+                          cattle-provisioning-capi-system,
+                          cattle-resources-system,
+                          cattle-sriov-system,
+                          cattle-system,
+                          cattle-ui-plugin-system,
+                          cattle-windows-gmsa-system,
+                          cert-manager,
+                          cis-operator-system,
+                          fleet-default,
+                          ingress-nginx,
+                          istio-system,
+                          kube-node-lease,
+                          kube-public,
+                          kube-system,
+                          longhorn-system,
+                          metallb-system,
+                          rancher-alerting-drivers,
+                          security-scan,
+                          tigera-operator]
+    path: /etc/rancher/rke2/rancher-pss.yaml

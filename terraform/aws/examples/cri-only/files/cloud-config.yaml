@@ -1,0 +1,158 @@
+packages:
+  - bash-completion
+  - bind-utils
+  - conntrack
+  - container-selinux
+  - git
+  - info
+  - iptables-nft
+  - jq
+  - man-pages
+  - nmap
+  - socat
+  - vim
+write_files:
+  - content: |
+      net.bridge.bridge-nf-call-iptables  = 1
+      net.bridge.bridge-nf-call-ip6tables = 1
+      net.ipv4.ip_forward                 = 1
+    path: /etc/sysctl.d/99-ip-forwarding.conf
+  - content: |
+      br_netfilter
+      overlay
+    path: /etc/modules.load.d/10-container-networking.conf
+  - content: |
+      Defaults secure_path="/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin"
+    path: /etc/sudoers.d/40-secure-path
+  - content: |
+      kernel.keys.root_maxkeys  = 1000000
+      kernel.keys.root_maxbytes = 25000000
+      kernel.panic              = 10
+      kernel.panic_on_oops      = 1
+      vm.overcommit_memory      = 1
+      vm.panic_on_oom           = 0
+    path: /etc/sysctl.d/60-kubelet.conf
+  - content: |
+      runtime-endpoint: unix:///run/containerd/containerd.sock
+      image-endpoint: unix:///run/containerd/containerd.sock
+    path: /etc/crictl.yaml
+  - content: |
+      {
+        "cniVersion": "1.0.0",
+        "name": "cni-net0",
+        "plugins": [
+          {
+            "type": "ptp",
+            "ipMasq": true,
+            "ipam": {
+              "type": "host-local",
+              "ranges": [
+                [
+                  { "subnet": "10.42.0.0/16" }
+                ]
+              ],
+              "routes": [
+                { "dst": "0.0.0.0/0" }
+              ]
+            }
+          }
+        ]
+      }
+    path: /etc/cni/net.d/00-ptp.conflist
+  - content: |
+      #!/bin/sh
+
+      NS="cni-$(uuidgen)"
+      VETH_DEV="veth$(cat /dev/random | tr -cd 'a-z0-9' | head -c 8)"
+      PEER_DEV="eth0"
+      SUBNET="10.40.0.0/16"
+
+      # no IPAM tracking, so this will only work once for each subnet
+      IP_PREFIX=$(echo $SUBNET | cut -d '/' -f1 | cut -d '.' -f1-3)
+      PREFIX_LEN=$(echo $SUBNET | cut -d '/' -f2)
+      VETH_IP="${IP_PREFIX}.1"
+      PEER_IP="${IP_PREFIX}.2"
+
+      # create net namespace and veth pair connecting it to host's root net
+      ip netns add "$NS"
+      ip link add "$PEER_DEV" netns "$NS" type veth peer name "$VETH_DEV"
+
+      # turn on and assign address to host-side interface
+      ip link set "$VETH_DEV" up
+      ip addr add "${VETH_IP}/32" dev "$VETH_DEV"
+
+      # turn on and assign address to namespaced interface
+      ip -netns "$NS" link set lo up
+      ip -netns "$NS" link set "$PEER_DEV" up
+      ip -netns "$NS" addr add "${PEER_IP}/${PREFIX_LEN}" dev "$PEER_DEV"
+
+      # create route from host to namespace
+      ip route add "$PEER_IP" dev "$VETH_DEV"
+
+      # create routes from namespace to host
+      ip -netns "$NS" route add "$VETH_IP" dev "$PEER_DEV" scope link src "$PEER_IP"
+      ip -netns "$NS" route add default via "$VETH_IP"
+
+      # fix route to own subnet, which won't be routable on return
+      ip -netns "$NS" route del "$SUBNET" dev "$PEER_DEV"
+      ip -netns "$NS" route add "$SUBNET" via "$VETH_IP" dev "$PEER_DEV" src "$PEER_IP"
+
+      # create netfilter rules to SNAT SRC IP for egress
+      CHAIN="CNI-$(sha256sum <<<"${PEER_IP}/32" | head -c 24)"
+      iptables -t nat -N "$CHAIN"
+      iptables -t nat -A POSTROUTING -s "${PEER_IP}/32" -j "$CHAIN"
+      iptables -t nat -A "$CHAIN" -s "${PEER_IP}/32" -d "$SUBNET" -j ACCEPT
+      iptables -t nat -A "$CHAIN" -s "${PEER_IP}/32" ! -d 224.0.0.0/4 -j MASQUERADE
+    path: /usr/local/bin/create_veth
+    permissions: '0755'
+  - content: |
+      #!/bin/sh
+
+      IMG="$1"
+      IMG="${IMG:-busybox}"
+      IMG_BASE="$(basename $IMG)"
+      CTR_NAME="$2"
+      CTR_NAME="${CTR_NAME:-$IMG_BASE}"
+      POD_NAME="$2"
+      POD_NAME="${POD_NAME:-$CTR_NAME}"
+
+      cat <<EOF > "${POD_NAME}-sandbox-config.json"
+      {
+        "metadata": {
+          "name": "$POD_NAME",
+          "namespace": "default",
+          "attempt": 1,
+          "uid": "$(uuidgen)"
+        },
+        "linux": {
+          "cgroup_parent": "/cni-pods.slice"
+        }
+      }
+      EOF
+
+      cat <<EOF > "${CTR_NAME}-container-config.json"
+      {
+        "metadata": {
+          "name": "$CTR_NAME"
+        },
+        "image":{
+          "image": "$IMG"
+        },
+        "command": [
+          "sleep",
+          "inf"
+        ],
+        "linux": {}
+      }
+      EOF
+
+      crictl pull "$IMG" > /dev/null
+      POD_ID=$(crictl runp "${POD_NAME}-sandbox-config.json")
+      CONTAINER_ID=$(crictl create "$POD_ID" "${CTR_NAME}-container-config.json" "${POD_NAME}-sandbox-config.json")
+      crictl start "$CONTAINER_ID" > /dev/null
+
+      rm -f "${POD_NAME}-sandbox-config.json" "${CTR_NAME}-container-config.json"
+
+      echo "$(head -c 13 <<<"$POD_ID")"
+    path: /usr/local/bin/create_pod
+    permissions: '0755'
