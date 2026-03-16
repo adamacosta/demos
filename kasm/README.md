@@ -17,3 +17,4 @@ Kasm Workspaces is to be installed in a multi-server configuration. The Kasm Age
 - [Airgap Prep](./docs/airgap.md)
 - [RKE2 Cluster](./docs/rke2.md)
 - [Kasm Workspaces](./docs/kasm.md)
+- [Kasm Docker Agent](./docs/agent.md)

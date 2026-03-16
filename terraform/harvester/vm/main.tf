@@ -58,6 +58,11 @@ resource "harvester_virtualmachine" "vm" {
     user_data_secret_name    = harvester_cloudinit_secret.cloud-config.name
     network_data_secret_name = harvester_cloudinit_secret.cloud-config.name
   }
+
+  # CSI provider may attach new disks at runtime
+  lifecycle {
+    ignore_changes = [disk]
+  }
 }
 
 output "primary_ip" {

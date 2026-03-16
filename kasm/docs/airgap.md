@@ -196,6 +196,8 @@ kubectl get secret \
 
 ### Kasm Workspaces
 
+#### Helm chart and container images
+
 Kasm Workspaces Helm chart is still in beta status and only available directly from Github.
 
 Clone the repo:
@@ -244,3 +246,82 @@ kasm="kasm-1.1181.0.tgz" \
   yq -i '.spec.chartContent = (load_str(strenv(kasm)) | @base64)' \
   manifests/kasm.yaml
 ```
+
+#### Docker agent
+
+We also need to pre-stage the Kasm Docker agent into our private network. This is preloaded onto the same server that serves the rpms but on a different port, in this case 8080 instead of 8000 for the rpm repository. Get it from the upstream source:
+
+```sh
+curl -fsLS \
+  https://kasm-static-content.s3.amazonaws.com/kasm_release_1.18.1.tar.gz \
+  --output "$HOME/images/kasm_release_1.18.1.tar.gz"
+```
+
+We also need the airgap tarballs for the container images that would get pulled at runtime:
+
+```sh
+curl -fsLS \
+  https://kasm-static-content.s3.amazonaws.com/kasm_release_service_images_amd64_1.18.1.tar.gz \
+  --output "$HOME/images/kasm_release_service_images_amd64_1.18.1.tar.gz"
+curl -fsLS \
+  https://kasm-static-content.s3.amazonaws.com/kasm_release_workspace_images_amd64_1.18.1.tar.gz \
+  --output "$HOME/images/kasm_release_workspace_images_amd64_1.18.1.tar.gz"
+curl -fsLS \
+  https://kasm-static-content.s3.amazonaws.com/kasm_release_network_plugin_images_amd64_1.18.1.tar.gz \
+  --output "$HOME/images/kasm_release_network_plugin_images_amd64_1.18.1.tar.gz"
+curl -fsLS \
+  https://kasm-static-content.s3.amazonaws.com/kasm_release_logging_plugin_images_amd64_1.18.1.tar.gz \
+  --output "$HOME/images/kasm_release_logging_plugin_images_amd64_1.18.1.tar.gz"
+```
+
+Finally, we need the .deb packages for `docker` and `qemu-guest-agent` plus their dependencies:
+
+```sh
+curl -fsLS \
+  https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/containerd.io_2.2.2-1~ubuntu.24.04~noble_amd64.deb \
+  --output "$HOME/images/containerd.io_2.2.2-1~ubuntu.24.04~noble_amd64.deb"
+curl -fsLS \
+  https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/docker-buildx-plugin_0.31.1-1~ubuntu.24.04~noble_amd64.deb \
+  --output "$HOME/images/docker-buildx-plugin_0.31.1-1~ubuntu.24.04~noble_amd64.deb"
+curl -fsLS \
+  https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/docker-ce_29.3.0-1~ubuntu.24.04~noble_amd64.deb \
+  --output "$HOME/images/docker-ce_29.3.0-1~ubuntu.24.04~noble_amd64.deb"
+curl -fsLS \
+  https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/docker-ce-cli_29.3.0-1~ubuntu.24.04~noble_amd64.deb \
+  --output "$HOME/images/docker-ce-cli_29.3.0-1~ubuntu.24.04~noble_amd64.deb"
+curl -fsLS \
+  https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/docker-compose-plugin_5.1.0-1~ubuntu.24.04~noble_amd64.deb \
+  --output "$HOME/images/ocker-compose-plugin_5.1.0-1~ubuntu.24.04~noble_amd64.deb"
+curl -fsLS \
+  http://mirrors.kernel.org/ubuntu/pool/main/libu/liburing/liburing2_2.5-1build1_amd64.deb \
+  --output "$HOME/images/liburing2_2.5-1build1_amd64.deb"
+curl -fsLS \
+  http://security.ubuntu.com/ubuntu/pool/universe/q/qemu/qemu-guest-agent_8.2.2+ds-0ubuntu1.13_amd64.deb \
+  --output "$HOME/images/qemu-guest-agent_8.2.2+ds-0ubuntu1.13_amd64.deb"
+```
+
+These can be found by searching the [Docker Ubuntu repo](https://download.docker.com/linux/ubuntu/dists/noble/pool/stable/amd64/) and [Ubuntu Noble package search](https://packages.ubuntu.com/noble/allpackages).
+
+To start the server:
+
+```sh
+podman run \
+  --name images \
+  --mount "type=bind,source=$(pwd)/images,target=/usr/share/nginx/html,readonly" \
+  --publish 8080:80 \
+  --detach \
+  docker.io/nginx
+```
+
+#### Workspace Images
+
+Normally, Kasm pulls its workspaces images from Docker Hub as needed. The procedure we have described for airgapping thus far pulls in the following images to preload into Docker's local image store on the agent node:
+
+```
+kasmweb/ubuntu-jammy-desktop:1.18.0
+kasmweb/firefox:1.18.0
+kasmweb/chrome:1.18.0
+kasmweb/terminal:1.18.0
+```
+
+There are, however, many other images available, and Kasm also allows you to use custom images. See [Default Docker Images](https://docs.kasm.com/docs/guide/custom_images) for a full list. Any of these that are wanted would need to be separately downloaded on an Internet-connected host and then transferred to the Docker agent for loading into the local image store.
