@@ -43,6 +43,7 @@ plugins:
                      cattle-windows-gmsa-system,
                      cert-manager,
                      cis-operator-system,
+                     compliance-operator-system,
                      endpoint-copier-operator,
                      fleet-default,
                      fleet-local,

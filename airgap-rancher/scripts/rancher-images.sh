@@ -8,8 +8,8 @@ RANCHER_VERSION="$1"
 pushd "${WORKDIR}"
 
 # Download the manifest with a full images list
-hauler store add image "rgcrprod.azurecr.us/hauler/rancher-manifest.yaml:v${RANCHER_VERSION}"
-hauler store extract "rgcrprod.azurecr.us/hauler/rancher-manifest.yaml:v${RANCHER_VERSION}"
+hauler store add image "registry.ranchercarbide.dev/hauler/rancher-manifest.yaml:v${RANCHER_VERSION}"
+hauler store extract "registry.ranchercarbide.dev/hauler/rancher-manifest.yaml:v${RANCHER_VERSION}"
 
 # Extract into plain text image reference per line
 yq '.spec.images[] | select(.name)' "rancher-manifest.yaml" | awk '{print $2}' > "orig-rancher-images.txt"
@@ -19,11 +19,16 @@ sed -E '/aks|ali|aws|azureserviceoperator|eks|gke|mirrored|nginx|redis|thanos/d'
   "orig-rancher-images.txt" \
   > "filtered-rancher-images.txt"
 
-# Re-add Cluster API and pause
+# Needed:
+# - cluster-api is now used by all provisioners
+# - pause required by runtime
+# - kube-vip and longhorn needed for harvester clusters
+# - sonobuoy is the scanner used by compliance-operator
 grep cluster-api "orig-rancher-images.txt" >> "filtered-rancher-images.txt"
 grep pause "orig-rancher-images.txt" >> "filtered-rancher-images.txt"
 grep mirrored-kube-vip "orig-rancher-images.txt" >> "filtered-rancher-images.txt"
 grep mirrored-longhorn "orig-rancher-images.txt" >> "filtered-rancher-images.txt"
+grep mirrored-sonobuoy "orig-rancher-images.txt" >> "filtered-rancher-images.txt"
 
 # Pick the latest tag for each repo ———
 > "unsorted-rancher.txt"
