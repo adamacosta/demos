@@ -200,11 +200,12 @@ resource "aws_instance" "server" {
   metadata_options {
     http_put_response_hop_limit = 3 # default of 1 won't work for containerized cert-manager
     http_tokens                 = "required"
-    instance_metadata_tags      = "enabled"
+    instance_metadata_tags      = "disabled" # 'kubernetes.io/cluster/$NAME' disallowed
   }
 
   tags = {
-    Name = local.tag_name
+    Name = "${local.tag_name}-${count.index}"
+    RKE2_SUPERVISOR_TG = "${var.resource_name}-9345-TCP"
   }
 }
 
@@ -215,7 +216,7 @@ resource "aws_network_interface" "secondary" {
     [aws_security_group.internal.id],
     var.extra_security_groups
   )
-  subnet_id = data.aws_subnets.selected.ids[1]
+  subnet_id = data.aws_subnets.selected.ids[0]
 }
 
 resource "aws_network_interface_attachment" "test" {

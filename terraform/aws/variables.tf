@@ -150,6 +150,12 @@ variable "instance_type" {
   type        = string
 }
 
+variable "lb_ports" {
+  default     = []
+  description = "Ports to create load balancer listeners for"
+  type        = list(object({ port = number, protocol = string }))
+}
+
 variable "num_servers" {
   default     = 1
   description = "Number of servers to create (default 1)"

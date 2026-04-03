@@ -1,4 +1,6 @@
-# NIWIC (Charleston)
+# Scientific Research Corporation - CC MK II
+
+Edge Kit for NWIC
 
 Trying to install Rancher onto airgapped Harvester.
 

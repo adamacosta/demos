@@ -70,7 +70,7 @@ resource "aws_iam_role_policy_attachment" "server_dns_challenge" {
 # This assumes a secret exists at a key equal to the user's name
 locals {
   secret_arn = provider::aws::arn_build(
-    local.aws_account_id,
+    local.aws_partition,
     "secretsmanager",
     local.aws_region,
     local.aws_account_id,
@@ -100,5 +100,69 @@ resource "aws_iam_role_policy_attachment" "read_carbide_password" {
   count = var.carbide_user == "" ? 0 : 1
 
   policy_arn = aws_iam_policy.read_carbide_password[0].arn
+  role       = aws_iam_role.server.name
+}
+
+data "aws_iam_policy_document" "load_balancer" {
+  statement {
+    effect    = "Allow"
+    actions   = [
+      "ec2:DescribeInstances",
+      "elasticloadbalancing:DescribeLoadBalancers",
+      "elasticloadbalancing:DescribeTargetGroups",
+      "elasticloadbalancing:DescribeTargetHealth"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_policy" "load_balancer" {
+  name        = "${var.resource_name}-lb"
+  description = "Policy to describe load balancers"
+  policy      = data.aws_iam_policy_document.load_balancer.json
+}
+
+resource "aws_iam_role_policy_attachment" "load_balancer" {
+  policy_arn = aws_iam_policy.load_balancer.arn
+  role       = aws_iam_role.server.name
+}
+
+locals {
+  token_secret_arn = provider::aws::arn_build(
+    local.aws_partition,
+    "secretsmanager",
+    local.aws_region,
+    local.aws_account_id,
+    "secret:${var.resource_name}/token*"
+  )
+}
+
+data "aws_iam_policy_document" "cluster_token" {
+  statement {
+    effect    = "Allow"
+    actions   = [
+      "secretsmanager:CreateSecret"
+    ]
+    resources = ["*"]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = [
+      "secretsmanager:GetSecretValue",
+      "secretsmanager:PutSecretValue"
+    ]
+    resources = [local.token_secret_arn]
+  }
+}
+
+resource "aws_iam_policy" "cluster_token" {
+  name        = "readwrite_${var.resource_name}"
+  description = "Policy for secret value at ${var.resource_name}/token"
+  policy      = data.aws_iam_policy_document.cluster_token.json
+}
+
+resource "aws_iam_role_policy_attachment" "cluster_token" {
+  policy_arn = aws_iam_policy.cluster_token.arn
   role       = aws_iam_role.server.name
 }

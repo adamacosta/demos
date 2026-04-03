@@ -15,8 +15,8 @@ provider "aws" {
   default_tags {
     tags = merge(
       {
-        Terraform = "true",
-        Env       = local.env_name
+        Terraform   = "true",
+        Environment = local.env_name
       },
       var.owner_name == null ? {} : { Owner = var.owner_name },
       var.tags
