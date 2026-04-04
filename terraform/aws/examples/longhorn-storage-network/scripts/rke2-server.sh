@@ -31,7 +31,7 @@ do_prep_env() {
     --output text | 
     awk -F '/' '{print $3}')
   CP_LB_URL=$(aws elbv2 describe-load-balancers \
-    --name "${CLUSTER_NAME}-cp" \
+    --name "$CLUSTER_NAME" \
     --query "LoadBalancers[0].DNSName" \
     --output text)
   
@@ -48,7 +48,7 @@ do_check_cp_listener() {
 
 do_check_initializer() {
   TG_ARN=$(aws elbv2 describe-target-groups \
-    --names "${CLUSTER_NAME}-cp-9345-TCP" \
+    --names "${CLUSTER_NAME}-9345-TCP" \
     --query "TargetGroups[0].TargetGroupArn" \
     --output text)
   INITIALIZER_ID=$(aws elbv2 describe-target-health \

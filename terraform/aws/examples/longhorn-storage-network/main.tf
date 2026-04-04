@@ -1,9 +1,17 @@
+terraform {
+  backend "s3" {
+    bucket = "aacosta-tfstate"
+    key    = "lhnet.tfstate"
+    region = "us-east-2"
+  }
+}
+
 data "http" "mykeys" {
   url = "https://github.com/adamacosta.keys"
 }
 
 locals {
-  cluster_name = "longhorn-storage-network"
+  cluster_name = "lhnet"
 }
 
 module "server" {
@@ -26,7 +34,7 @@ module "server" {
   ]
   cloud_init_scripts = [
     file("${path.module}/scripts/rke2-prereqs.sh"),
-    #file("${path.module}/scripts/rke2-server.sh")
+    file("${path.module}/scripts/rke2-server.sh")
   ]
   create_secondary_netif = true
   lb_ports = [
