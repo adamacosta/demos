@@ -19,7 +19,8 @@ module "server" {
 
   num_servers = 3
 
-  allowed_ingress_tcp_ports       = [80, 443, 6443]
+  allowed_ingress_cidr            = "0.0.0.0/0"
+  allowed_ingress_tcp_ports       = [443, 6443, 9345]
   allowed_ingress_tcp_port_ranges = [{ from = 30000, to = 32767 }]
   allowed_ingress_udp_port_ranges = [{ from = 30000, to = 32767 }]
   allowed_self_tcp_ports          = [4240, 4244, 6443, 9345, 9963, 10250]

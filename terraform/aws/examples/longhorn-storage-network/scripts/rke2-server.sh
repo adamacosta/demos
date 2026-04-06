@@ -42,8 +42,12 @@ do_prep_env() {
 }
 
 do_check_cp_listener() {
-  nc --wait 1 -z "$CP_LB_URL" 6443
+  nc --wait 1 -z "$CP_LB_URL" 9345
   return $?
+}
+
+do_wait_cp_listener() {
+  timeout 5m bash -c "do_check_cp_listener; do sleep 5; done"
 }
 
 do_check_initializer() {
@@ -87,19 +91,22 @@ do_create_join_token() {
   # Creating join token rather than letting rke2 do it
   # because we would otherwise need to wait X minutes
   # for rke2 to be activated before it creates one
-  JOIN_TOKEN=$(openssl rand -hex 40)
-  aws secretsmanager create-secret \
-    --name "${CLUSTER_NAME}/token" \
-    --secret-string "$JOIN_TOKEN"
-  do_append_token_to_config "$JOIN_TOKEN"
+  NUM_EXISTING=$(aws secretsmanager list-secrets \
+    --query "length(SecretList[?Name=='${CLUSTER_NAME}/token'])" \
+    --output text \
+    --no-cli-pager)
+  if [ "$NUM_EXISTING" -ne 0 ]; then
+    do_retrieve_join_token
+  else
+    JOIN_TOKEN=$(openssl rand -hex 40)
+    aws secretsmanager create-secret \
+      --name "${CLUSTER_NAME}/token" \
+      --secret-string "$JOIN_TOKEN"
+    do_append_token_to_config "$JOIN_TOKEN"
+  fi
 }
 
-do_retrieve_join_token() {
-  # Will be uploaded by the time supervisor is listening,
-  # but beware it may take a couple minutes after rke2
-  # is running on initializer before target group
-  # health check admits it as a healthy target
-  timeout 5m bash -c "until nc -z $CP_LB_URL 9345; do sleep 5; done"
+do_retrieve_join_token() {  
   JOIN_TOKEN=$(aws secretsmanager get-secret-value \
     --name "${CLUSTER_NAME}/token" \
     --query "SecretString" \
@@ -145,6 +152,7 @@ do_create_cluster() {
 do_join_cluster() {
   do_append_san_to_config
   do_append_server_to_config
+  do_wait_cp_listener
   do_retrieve_join_token
   do_start_rke2
 }
