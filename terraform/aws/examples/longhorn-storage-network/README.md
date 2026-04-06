@@ -1,4 +1,18 @@
-# multus-cilium
+# longhorn-storage-network
+
+Check for target group health:
+
+```sh
+TG_ARN=$(aws elbv2 describe-target-groups \
+  --names lhnet-9345-TCP \
+  --query "TargetGroups[0].TargetGroupArn" \
+  --output text \
+  --no-cli-pager)
+aws elbv2 describe-target-health \
+  --target-group-arn "$TG_ARN" \
+  --query "TargetHealthDescriptions[*].[Target.Id,TargetHealth.State]" \
+  --no-cli-pager
+```
 
 Grab IPs for the new instances, sorted by instance ID, and choose the first as an initializer node:
 

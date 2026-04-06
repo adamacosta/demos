@@ -141,7 +141,8 @@ data "aws_iam_policy_document" "cluster_token" {
   statement {
     effect    = "Allow"
     actions   = [
-      "secretsmanager:CreateSecret"
+      "secretsmanager:CreateSecret",
+      "secretsmanager:ListSecrets"
     ]
     resources = ["*"]
   }
