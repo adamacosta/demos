@@ -108,7 +108,7 @@ do_create_join_token() {
 
 do_retrieve_join_token() {  
   JOIN_TOKEN=$(aws secretsmanager get-secret-value \
-    --name "${CLUSTER_NAME}/token" \
+    --secret-id "${CLUSTER_NAME}/token" \
     --query "SecretString" \
     --output text)
   do_append_token_to_config "$JOIN_TOKEN"
