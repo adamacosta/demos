@@ -49,3 +49,63 @@ aws ec2 describe-instances \
   --no-cli-pager \
   --output text
 ```
+
+Create a NAD:
+
+```sh
+kubectl apply -f -<<EOF
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: longhorn-system
+---
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: storage-net
+  namespace: longhorn-system
+spec:
+  config: '{
+            "cniVersion": "0.3.1",
+            "type": "bridge",
+            "bridge": "lhnet-br",
+            "promiscMode": true,
+            "ipam": {
+              "type": "whereabouts",
+              "log_file": "/var/log/whereabouts.log",
+              "log_level": "debug",
+              "range": "192.168.0.0/16"
+            }
+          }'
+EOF
+```
+
+Create daemonset:
+
+```sh
+kubectl apply -f -<<EOF
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lhnet-test
+  namespace: longhorn-system
+spec:
+  selector:
+    matchLabels:
+      app: lhnet-test
+  template:
+    metadata:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: longhorn-system/storage-net
+      labels:
+        app: lhnet-test
+    spec:
+      containers:
+      - command:
+        - sleep
+        - inf
+        image: wbitt/network-multitool
+        name: nettool
+        resources: {}
+EOF
+```

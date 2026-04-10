@@ -105,8 +105,8 @@ resource "aws_iam_role_policy_attachment" "read_carbide_password" {
 
 data "aws_iam_policy_document" "load_balancer" {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "ec2:DescribeInstances",
       "elasticloadbalancing:DescribeLoadBalancers",
       "elasticloadbalancing:DescribeTargetGroups",
@@ -139,8 +139,8 @@ locals {
 
 data "aws_iam_policy_document" "cluster_token" {
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "secretsmanager:CreateSecret",
       "secretsmanager:ListSecrets"
     ]
@@ -148,8 +148,8 @@ data "aws_iam_policy_document" "cluster_token" {
   }
 
   statement {
-    effect    = "Allow"
-    actions   = [
+    effect = "Allow"
+    actions = [
       "secretsmanager:GetSecretValue",
       "secretsmanager:PutSecretValue"
     ]

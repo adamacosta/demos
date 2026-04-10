@@ -204,7 +204,7 @@ resource "aws_instance" "server" {
   }
 
   tags = {
-    Name = "${local.tag_name}-${count.index}"
+    Name               = "${local.tag_name}-${count.index}"
     RKE2_SUPERVISOR_TG = "${var.resource_name}-9345-TCP"
   }
 }

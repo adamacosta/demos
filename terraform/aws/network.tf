@@ -19,11 +19,12 @@ data "aws_subnets" "selected" {
 }
 
 resource "aws_lb" "this" {
-  name               = var.resource_name
-  internal           = false
-  load_balancer_type = "network"
-  security_groups    = [aws_security_group.internal.id, aws_security_group.external.id]
-  subnets            = data.aws_subnets.selected.ids
+  name                             = var.resource_name
+  enable_cross_zone_load_balancing = true
+  internal                         = false
+  load_balancer_type               = "network"
+  security_groups                  = [aws_security_group.internal.id, aws_security_group.external.id]
+  subnets                          = data.aws_subnets.selected.ids
 
   tags = {
     Name = local.tag_name
@@ -54,17 +55,17 @@ resource "aws_lb_listener" "servers" {
 
 locals {
   ids = aws_instance.server[*].id
-  tgs = [for tg in aws_lb_target_group.servers: tg.arn]
+  tgs = [for tg in aws_lb_target_group.servers : tg.arn]
   tg_attachments = flatten([
-    for id in local.ids: [for tg in local.tgs: {id=id, tg=tg}]
+    for id in local.ids : [for tg in local.tgs : { id = id, tg = tg }]
   ])
 }
 
 resource "aws_lb_target_group_attachment" "server" {
-  for_each = {for i, v in local.tg_attachments: i => v}
+  for_each = { for i, v in local.tg_attachments : i => v }
 
   target_group_arn = each.value.tg
-  target_id = each.value.id
+  target_id        = each.value.id
 }
 
 resource "aws_eip" "server_ip" {

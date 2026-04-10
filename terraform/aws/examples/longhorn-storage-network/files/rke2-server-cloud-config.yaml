@@ -82,6 +82,8 @@ write_files:
         valuesContent: |-
           rke2-whereabouts:
             enabled: true
+            nodeSliceController:
+              enabled: true
     path: /var/lib/rancher/rke2/server/manifests/rke2-multus-config.yaml
   - content: |
       apiVersion: apiserver.config.k8s.io/v1

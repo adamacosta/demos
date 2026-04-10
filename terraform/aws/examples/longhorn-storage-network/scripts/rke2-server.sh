@@ -47,7 +47,7 @@ do_check_cp_listener() {
 }
 
 do_wait_cp_listener() {
-  timeout 5m bash -c "do_check_cp_listener; do sleep 5; done"
+  timeout 5m bash -c "until nc --wait 1 -z $CP_LB_URL 9345; do sleep 5; done"
 }
 
 do_check_initializer() {
