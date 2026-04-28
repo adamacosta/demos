@@ -33,24 +33,23 @@ resource "harvester_ippool" "rancher" {
   }
 }
 
-data "harvester_image" "sles16" {
-  display_name = "SLES-16.0-Minimal-VM.x86_64-Cloud-QU1.qcow2"
+data "harvester_image" "rocky9" {
+  display_name = "Rocky-9-GenericCloud-Base.latest.x86_64.qcow2"
   namespace    = "harvester-public"
 }
 
 module "cp" {
   source = "../.."
 
-  network_data   = file("${path.module}/files/network-config.yaml")
-  network_name   = "harvester-public/vmnet1"
-  num_vms        = 3
-  root_disk_size = "100Gi"
-  user_data      = file("${path.module}/files/cloud-config.yaml")
-  vm_cpus        = 4
-  vm_image       = data.harvester_image.sles16.id
-  vm_name        = "rancher-cp"
-  vm_namespace   = "rancher"
-  vm_ram         = "16Gi"
+  network_data = file("${path.module}/files/network-config.yaml")
+  network_name = "harvester-public/vmnet1"
+  num_vms      = 3
+  user_data    = file("${path.module}/files/cloud-config.yaml")
+  vm_cpus      = 4
+  vm_image     = data.harvester_image.rocky9.id
+  vm_name      = "rancher-cp"
+  vm_namespace = "rancher"
+  vm_ram       = "8Gi"
 
   mac_address = [
     "52:54:00:12:34:a1",

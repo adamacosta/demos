@@ -94,7 +94,7 @@ output "cluster_ips" {
 # Kasm Docker agent
 data "harvester_image" "ubuntu24" {
   display_name = local.image_name
-  namespace = "harvester-public"
+  namespace    = "harvester-public"
 }
 
 resource "kubernetes_namespace_v1" "kasm_agent" {
@@ -110,16 +110,16 @@ resource "kubernetes_namespace_v1" "kasm_agent" {
 module "kasm_agent" {
   source = "../.."
 
-  network_data = file("${path.module}/files/kasmagent-network-config.yaml")
-  network_name = local.network_name
-  num_vms      = 1
+  network_data   = file("${path.module}/files/kasmagent-network-config.yaml")
+  network_name   = local.network_name
+  num_vms        = 1
   root_disk_size = "100Gi"
-  user_data    = file("${path.module}/files/kasmagent-cloud-config.yaml")
-  vm_cpus      = 2
-  vm_image     = data.harvester_image.ubuntu24.id
-  vm_name      = "${local.cluster_name}-agent"
-  vm_namespace = kubernetes_namespace_v1.kasm_agent.metadata[0].name
-  vm_ram       = "8Gi"
+  user_data      = file("${path.module}/files/kasmagent-cloud-config.yaml")
+  vm_cpus        = 2
+  vm_image       = data.harvester_image.ubuntu24.id
+  vm_name        = "${local.cluster_name}-agent"
+  vm_namespace   = kubernetes_namespace_v1.kasm_agent.metadata[0].name
+  vm_ram         = "8Gi"
 
   mac_address = ["52:54:00:12:35:a1"]
 }
